@@ -1,0 +1,25 @@
+"use strict";
+module.exports = () => {
+    const express = require('express');
+    const app = express();
+    const bodyparser = require('body-parser');
+    app.use(bodyparser.urlencoded({ extended: true }));
+    app.use(bodyparser.json());
+    var cors = require('cors');
+    app.use(cors());
+    const connection = require('../config/mysql');
+    connection.connect(err => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+    });
+    const sql_builder = require('../config/sql_builder');
+    console.log(sql_builder);
+    const consign = require('consign');
+    consign()
+        .include('src/controllers')
+        .into(app, sql_builder);
+    return app;
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXhwcmVzcy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy9jb25maWcvZXhwcmVzcy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUEsTUFBTSxDQUFDLE9BQU8sR0FBRyxHQUFHLEVBQUU7SUFDbEIsTUFBTSxPQUFPLEdBQUcsT0FBTyxDQUFDLFNBQVMsQ0FBQyxDQUFDO0lBQ25DLE1BQU0sR0FBRyxHQUFHLE9BQU8sRUFBRSxDQUFDO0lBRXRCLE1BQU0sVUFBVSxHQUFHLE9BQU8sQ0FBQyxhQUFhLENBQUMsQ0FBQztJQUMxQyxHQUFHLENBQUMsR0FBRyxDQUFDLFVBQVUsQ0FBQyxVQUFVLENBQUMsRUFBRSxRQUFRLEVBQUUsSUFBSSxFQUFFLENBQUMsQ0FBQyxDQUFDO0lBQ25ELEdBQUcsQ0FBQyxHQUFHLENBQUMsVUFBVSxDQUFDLElBQUksRUFBRSxDQUFDLENBQUM7SUFFM0IsSUFBSSxJQUFJLEdBQUcsT0FBTyxDQUFDLE1BQU0sQ0FBQyxDQUFBO0lBQzFCLEdBQUcsQ0FBQyxHQUFHLENBQUMsSUFBSSxFQUFFLENBQUMsQ0FBQTtJQUVmLE1BQU0sVUFBVSxHQUFHLE9BQU8sQ0FBQyxpQkFBaUIsQ0FBQyxDQUFDO0lBQzlDLFVBQVUsQ0FBQyxPQUFPLENBQ2QsR0FBRyxDQUFDLEVBQUU7UUFDRixJQUFJLEdBQUcsRUFBRTtZQUNMLE9BQU8sQ0FBQyxHQUFHLENBQUMsR0FBRyxDQUFDLENBQUM7WUFDakIsT0FBTztTQUNWO0lBQ0wsQ0FBQyxDQUNKLENBQUM7SUFFRixNQUFNLFdBQVcsR0FBRyxPQUFPLENBQUMsdUJBQXVCLENBQUMsQ0FBQztJQUNyRCxPQUFPLENBQUMsR0FBRyxDQUFDLFdBQVcsQ0FBQyxDQUFBO0lBQ3hCLE1BQU0sT0FBTyxHQUFHLE9BQU8sQ0FBQyxTQUFTLENBQUMsQ0FBQztJQUNuQyxPQUFPLEVBQUU7U0FDSixPQUFPLENBQUMsaUJBQWlCLENBQUM7U0FDMUIsSUFBSSxDQUFDLEdBQUcsRUFBRSxXQUFXLENBQUMsQ0FBQztJQUU1QixPQUFPLEdBQUcsQ0FBQTtBQUNkLENBQUMsQ0FBQSJ9
