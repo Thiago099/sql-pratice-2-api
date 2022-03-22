@@ -1,9 +1,10 @@
 const { route } = require('express/lib/application');
 
 
-module.exports = (app, type ,name, sub_tables: string[] | {field:string, table:string}[] | null = null, order_by = null) => {
+module.exports = (app, type ,name, sub_tables: string[] | {field:string, table:string, read_only:string}[] | null = null, order_by = null) => {
     const connection = require('./mysql');
     const parameters: {field:string, table:string}[] = [];
+    const read_only: {field:string, table:string}[] = [];
     if(sub_tables != null)
     {
         for(let i = 0; i < sub_tables.length; i++)
@@ -19,6 +20,11 @@ module.exports = (app, type ,name, sub_tables: string[] | {field:string, table:s
             {
                 field = (sub_tables[i] as {field:string, table:string}).field
                 table = (sub_tables[i] as {field:string, table:string}).table
+                if((sub_tables[i] as {read_only:string}).read_only != null)
+                {
+                    read_only.push({field, table})
+                    continue
+                }
             }
             parameters.push({field, table})
     }
@@ -47,6 +53,26 @@ module.exports = (app, type ,name, sub_tables: string[] | {field:string, table:s
                                }
                                rows.forEach(element => {
                                    delete element[`id_${parameters[i].field}`];
+                               });
+                               resolve(rows);
+                               }
+                           );
+                       });
+                   }
+                   for(let i = 0; i < read_only.length; i++)
+                   {
+                       result[read_only[i].table+'_read_only'] = await new Promise((resolve, reject) =>{
+                           connection.query(`SELECT * FROM \`${read_only[i].table}\` WHERE \`${read_only[i].table}\`.id_${read_only[i].field} = ?`,
+                           [id],
+                           (err, rows) => {
+                               if(err) reject(err);
+                               if(rows === undefined) 
+                               {
+                                   resolve(null);
+                                   return
+                               }
+                               rows.forEach(element => {
+                                   delete element[`id_${read_only[i].field}`];
                                });
                                resolve(rows);
                                }
@@ -100,6 +126,14 @@ module.exports = (app, type ,name, sub_tables: string[] | {field:string, table:s
                        for(let i = 0; i < parameters.length; i++)
                        {
                            delete data[parameters[i].table];
+                       }
+                   }
+                
+                   if(read_only != null)
+                   {
+                       for(let i = 0; i < read_only.length; i++)
+                       {
+                           delete data[read_only[i].table+'_read_only'];
                        }
                    }
                    
