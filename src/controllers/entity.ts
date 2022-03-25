@@ -8,6 +8,11 @@ module.exports = (app, sql_builder) => {
             },
             {
                 table: "containing",
+                field: "entity_container",
+            },
+            {
+                read_only: true,
+                table: "containing",
                 field: "entity_content",
             }
         ]
